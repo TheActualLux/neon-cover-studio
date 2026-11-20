@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#111319">
+  <meta name="description" content="An offline-first cover art studio."><title>Afterglow — Cover Studio</title><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar"><a class="brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span>afterglow<span class="brand-dot">.</span></a><div class="top-meta"><i></i> LOCAL STUDIO <b>/</b> NO UPLOADS</div><button class="top-export" id="top-export">Export cover <span>↗</span></button></header>
+    <main class="workspace">
+      <aside class="sidebar" aria-label="Cover settings">
+        <div class="sidebar-title"><div><p class="eyebrow">THE CREATIVE DESK</p><h1>Make a cover.</h1></div><small>01 <b>/</b> 04</small></div>
+        <section class="section"><div class="section-head"><h2><b>01</b> Your photos</h2><span id="photo-count">0 images</span></div>
+          <label class="dropzone" id="dropzone"><input id="photo-input" type="file" accept="image/*" multiple><span class="upload-icon">↥</span><span><strong>Drop images here</strong><small>or <u>browse files</u> · JPG, PNG, WEBP</small></span><i>+</i></label><p class="photo-hint">Select a panel, then drag to reframe.</p><div id="photo-strip" class="photo-strip" aria-label="Loaded photos"></div>
+        </section>
+        <section class="section"><div class="section-head"><h2><b>02</b> Composition</h2></div>
+          <div class="layout-grid" id="layout-grid" role="group" aria-label="Choose a panel layout">
+            <button class="layout-option active" data-layout="big-left-with-two-right" aria-label="Feature" aria-pressed="true"><i class="layout-icon big"><b></b><b></b><b></b></i><span>Feature</span></button>
+            <button class="layout-option" data-layout="2x2" aria-label="Grid" aria-pressed="false"><i class="layout-icon four"><b></b><b></b><b></b><b></b></i><span>Grid</span></button>
+            <button class="layout-option" data-layout="full-bleed" aria-label="Full bleed" aria-pressed="false"><i class="layout-icon one"><b></b></i><span>Full</span></button>
+            <button class="layout-option" data-layout="tall-3-stack" aria-label="Three stack" aria-pressed="false"><i class="layout-icon stack"><b></b><b></b><b></b></i><span>Stack</span></button>
+            <button class="layout-option" data-layout="4-strip" aria-label="Four strip" aria-pressed="false"><i class="layout-icon strip"><b></b><b></b><b></b><b></b></i><span>Strip</span></button>
+          </div>
+        </section>
+        <section class="section"><div class="section-head"><h2><b>03</b> The words</h2><span class="type-icon">Aa</span></div>
+          <label class="field-label" for="headline">HEADLINE</label><input class="text-input headline-input" id="headline" maxlength="42" value="SUNSET STORIES" autocomplete="off" spellcheck="false">
+          <label class="field-label kicker-label" for="kicker">SMALL PRINT <small>OPTIONAL</small></label><input class="text-input" id="kicker" maxlength="52" value="A STORY AFTER DARK" autocomplete="off" spellcheck="false">
+          <div class="range-head"><label class="field-label" for="tracking">LETTER SPACING</label><span id="tracking-value">+2</span></div><input class="range-input" id="tracking" type="range" min="-4" max="12" value="2" aria-label="Letter spacing">
+          <div class="align-row" role="group" aria-label="Caption alignment"><button class="align-button active" data-align="left" aria-label="Align left" aria-pressed="true">≡</button><button class="align-button" data-align="center" aria-label="Align center" aria-pressed="false">≡</button><button class="align-button" data-align="right" aria-label="Align right" aria-pressed="false">≡</button><span>CAPTION ALIGNMENT</span></div>
+        </section>
+        <section class="section"><div class="section-head"><h2><b>04</b> Color &amp; finish</h2></div>
+          <div class="grade-grid" id="grade-grid" role="group" aria-label="Choose a color grade">
+            <button class="grade-option active" data-grade="sunset" aria-pressed="true"><i class="swatch sunset"></i>Sunset <b>✓</b></button><button class="grade-option" data-grade="neon" aria-pressed="false"><i class="swatch neon"></i>Neon <b>✓</b></button><button class="grade-option" data-grade="noir" aria-pressed="false"><i class="swatch noir"></i>Noir <b>✓</b></button><button class="grade-option" data-grade="clean" aria-pressed="false"><i class="swatch clean"></i>Clean <b>✓</b></button>
+          </div>
+          <div class="effects-row"><label><input type="checkbox" data-effect="grain" checked><i></i>Film grain</label><label><input type="checkbox" data-effect="halftone" checked><i></i>Halftone</label><label><input type="checkbox" data-effect="vignette" checked><i></i>Vignette</label></div>
+        </section>
+        <footer class="sidebar-footer"><span>CRAFTED LOCALLY</span><b>✳</b><span>CTRL + V TO PASTE</span></footer>
+      </aside>
+      <section class="preview-area" aria-label="Cover preview">
+        <div class="preview-toolbar"><div><i class="live-dot"></i> LIVE CANVAS <b>/</b> <span id="preview-mode">FEATURE CUT</span></div><div class="preview-tools"><button id="shuffle-button" aria-label="Shuffle photos" title="Shuffle photos (R)">↻</button><small>ZOOM</small><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-readout">FIT</span><button id="zoom-in" aria-label="Zoom in">+</button></div></div>
+        <div class="canvas-stage" id="canvas-stage"><canvas id="preview-canvas" aria-label="Editable poster preview"></canvas><div id="empty-state" class="empty-state"><i>✳</i><strong>Your story starts here.</strong><span>Add a photo to make it yours.</span><button id="empty-add-button">ADD YOUR FIRST PHOTO <b>↗</b></button></div><div class="stage-hint">↖ &nbsp; SELECT A PANEL TO REFRAME</div><i class="corner tl"></i><i class="corner br"></i></div>
+        <div class="preview-footer"><div><small>YOUR CANVAS</small><strong id="canvas-dimensions">1080 × 1080</strong></div><div class="shortcuts"><kbd>R</kbd> SHUFFLE <span></span><kbd>E</kbd> EXPORT</div><button id="export-button" class="export-button">↓ &nbsp; Export PNG <b>↗</b></button></div>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="export-dialog" class="export-dialog" role="dialog" aria-modal="true" aria-labelledby="export-title" hidden><div class="dialog-backdrop" data-close-dialog></div><div class="dialog-card"><button class="dialog-close" data-close-dialog aria-label="Close export options">×</button><p class="eyebrow">READY FOR ITS CLOSE-UP?</p><h2 id="export-title">Choose your canvas.</h2><p class="dialog-description">A crisp PNG, rendered right here on your device.</p><div class="size-options"><button class="size-option active" data-size="1080x1080" aria-pressed="true"><i class="square"></i><strong>Square</strong><small>1080 × 1080</small></button><button class="size-option" data-size="1080x1350" aria-pressed="false"><i class="portrait"></i><strong>Portrait</strong><small>1080 × 1350</small></button><button class="size-option" data-size="1920x1080" aria-pressed="false"><i class="landscape"></i><strong>Landscape</strong><small>1920 × 1080</small></button></div><button id="dialog-export" class="dialog-export">Download PNG <span>↓</span></button></div></div>
+  </div><script type="module" src="./src/main.js"></script>
+</body>
+</html>
