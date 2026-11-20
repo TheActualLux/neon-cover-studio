@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Midnight Marquee — offline poster studio</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="marquee-top">
+      <div class="brand">
+        <span class="brand-star" aria-hidden="true">&#10022;</span>
+        <h1>Midnight Marquee</h1>
+        <span class="brand-sub">offline poster studio</span>
+      </div>
+      <p class="top-keys" aria-hidden="true">
+        <kbd>1</kbd>&ndash;<kbd>4</kbd> grade &middot; <kbd>R</kbd> shuffle &middot; <kbd>E</kbd> export
+      </p>
+    </header>
+
+    <main class="stage" id="stage" aria-label="Poster preview stage">
+      <div class="stage-frame">
+        <canvas id="poster" width="1080" height="1080">Poster preview canvas</canvas>
+      </div>
+      <p class="stage-hint" id="stageHint">Click a panel to select &middot; drag to pan &middot; wheel to zoom &middot; double-click to cycle its photo</p>
+    </main>
+
+    <aside class="rail" aria-label="Poster controls">
+      <section class="ctrl" aria-labelledby="sec-photos-h">
+        <h2 id="sec-photos-h"><span class="sec-num" aria-hidden="true">01</span>Photos</h2>
+        <label class="file-btn">
+          <span>Add photos&hellip;</span>
+          <input id="photoInput" type="file" accept="image/*" multiple>
+        </label>
+        <button type="button" id="shuffleBtn" class="ghost-btn">Shuffle photos <span class="key-hint">(R)</span></button>
+        <p class="photo-count" id="photoCount">No photos loaded</p>
+      </section>
+
+      <section class="ctrl" aria-labelledby="sec-title-h">
+        <h2 id="sec-title-h"><span class="sec-num" aria-hidden="true">02</span>Title block</h2>
+        <label class="field">
+          <span class="field-label">Kicker</span>
+          <input id="kickerInput" type="text" maxlength="40" value="TONIGHT AT THE MARQUEE" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">Headline</span>
+          <input id="titleInput" type="text" maxlength="60" value="Sunset Heist" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">Caption</span>
+          <input id="captionInput" type="text" maxlength="60" value="A MIDNIGHT MARQUEE PICTURE &middot; 35MM" autocomplete="off">
+        </label>
+        <div class="seg-row">
+          <span class="field-label" id="alignLabel">Alignment</span>
+          <div class="seg" role="group" aria-labelledby="alignLabel" id="alignSeg"></div>
+        </div>
+        <label class="field">
+          <span class="field-label">Tracking <output id="trackingOut">6</output></span>
+          <input id="trackingInput" type="range" min="0" max="20" step="1" value="6" aria-label="Letter tracking">
+        </label>
+      </section>
+
+      <section class="ctrl" aria-labelledby="sec-grade-h">
+        <h2 id="sec-grade-h"><span class="sec-num" aria-hidden="true">03</span>Grade &amp; effects</h2>
+        <div class="seg-row">
+          <span class="field-label" id="gradeLabel">Grade</span>
+          <div class="seg" role="group" aria-labelledby="gradeLabel" id="gradeSeg"></div>
+        </div>
+        <fieldset class="fx" id="fxField">
+          <legend class="field-label">Effects</legend>
+          <label class="fx-item"><input type="checkbox" id="fxGrain" checked> Film grain</label>
+          <label class="fx-item"><input type="checkbox" id="fxHalftone"> Halftone dots</label>
+          <label class="fx-item"><input type="checkbox" id="fxVignette" checked> Vignette</label>
+        </fieldset>
+      </section>
+
+      <section class="ctrl" aria-labelledby="sec-layout-h">
+        <h2 id="sec-layout-h"><span class="sec-num" aria-hidden="true">04</span>Layout</h2>
+        <div class="seg seg-wrap" role="group" aria-label="Panel layout" id="layoutSeg"></div>
+      </section>
+
+      <section class="ctrl" aria-labelledby="sec-export-h">
+        <h2 id="sec-export-h"><span class="sec-num" aria-hidden="true">05</span>Export</h2>
+        <div class="seg-row">
+          <span class="field-label" id="sizeLabel">Size</span>
+          <div class="seg" role="group" aria-labelledby="sizeLabel" id="sizeSeg"></div>
+        </div>
+        <button type="button" id="exportBtn" class="primary-btn">Export PNG <span class="key-hint">(E)</span></button>
+      </section>
+    </aside>
+
+    <footer class="statusbar">
+      <p id="status" role="status" aria-live="polite">Starting up&hellip;</p>
+      <p id="error" role="alert" aria-live="assertive" hidden></p>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
