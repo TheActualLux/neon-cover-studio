@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101116">
+  <title>Nightpost — cover studio</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Nightpost cover studio home">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span>nightpost<span class="brand-period">.</span></span>
+      </a>
+      <div class="top-note"><span class="live-dot"></span> LOCAL COVER STUDIO</div>
+    </header>
+
+    <div class="workspace">
+      <aside class="controls" aria-label="Cover controls">
+        <div class="intro">
+          <p class="eyebrow">MAKE IT A MOMENT</p>
+          <h1>Your night.<br><em>Your cover.</em></h1>
+          <p class="intro-copy">Turn a photo and a few words into a poster worth keeping.</p>
+        </div>
+
+        <section class="control-section photos-section" aria-labelledby="photos-title">
+          <div class="section-heading"><span class="section-number">01</span><h2 id="photos-title">Photo library</h2></div>
+          <label class="upload-button" for="file"><span class="upload-icon" aria-hidden="true">＋</span><span><strong>Add photos</strong><small>Choose, drop or paste images</small></span><span class="upload-arrow" aria-hidden="true">↗</span></label>
+          <input id="file" class="visually-hidden" type="file" accept="image/*" multiple>
+          <div id="photo-strip" class="photo-strip" aria-label="Available photos" hidden></div>
+          <p class="micro-hint">Select a thumbnail, or double-click a panel to cycle. Drag inside a panel to reframe.</p>
+        </section>
+
+        <section class="control-section" aria-labelledby="type-title">
+          <div class="section-heading"><span class="section-number">02</span><h2 id="type-title">The words</h2></div>
+          <label class="field-label" for="headline">Headline</label>
+          <input id="headline" class="text-input headline-input" type="text" maxlength="72" value="SUNSET HEIST" autocomplete="off" spellcheck="false">
+          <label class="field-label field-spaced" for="kicker">Kicker</label>
+          <input id="kicker" class="text-input" type="text" maxlength="64" value="A ONE-NIGHT JOB" autocomplete="off" spellcheck="false">
+          <div class="field-row">
+            <label class="field-label" for="align">Alignment</label>
+            <select id="align" class="select-input"><option value="left">Left</option><option value="center" selected>Center</option><option value="right">Right</option></select>
+          </div>
+          <label class="range-label" for="tracking"><span>Letter spacing</span><output id="tracking-val" for="tracking">2</output></label>
+          <input id="tracking" class="range-input" type="range" min="0" max="10" step="1" value="2">
+        </section>
+
+        <section class="control-section" aria-labelledby="look-title">
+          <div class="section-heading"><span class="section-number">03</span><h2 id="look-title">The look</h2></div>
+          <label class="field-row"><span class="field-label">Layout</span>
+            <select id="layout" class="select-input layout-select">
+              <option value="bigleft" selected>Big left · two right</option>
+              <option value="grid">2 × 2 grid</option>
+              <option value="full">Full bleed</option>
+              <option value="stack">Tall 3-stack</option>
+              <option value="strip">Four-strip</option>
+            </select>
+          </label>
+          <label class="field-row"><span class="field-label">Color grade</span>
+            <select id="grade" class="select-input">
+              <option value="sunset" selected>01 · Sunset</option>
+              <option value="neon">02 · Neon</option>
+              <option value="noir">03 · Noir</option>
+              <option value="clean">04 · Clean</option>
+            </select>
+          </label>
+          <div class="effects-title">FINISHING</div>
+          <div class="effects-grid">
+            <label class="check-pill"><input id="fx-grain" type="checkbox" checked><span class="check-mark"></span><span>Grain</span></label>
+            <label class="check-pill"><input id="fx-halftone" type="checkbox"><span class="check-mark"></span><span>Halftone</span></label>
+            <label class="check-pill"><input id="fx-vignette" type="checkbox" checked><span class="check-mark"></span><span>Vignette</span></label>
+          </div>
+        </section>
+
+        <section class="control-section export-section" aria-labelledby="export-title">
+          <div class="section-heading"><span class="section-number">04</span><h2 id="export-title">Take it with you</h2></div>
+          <label class="field-row export-size-row"><span class="field-label">Canvas size</span>
+            <select id="export-size" class="select-input">
+              <option value="1080x1080" selected>Square · 1080 × 1080</option>
+              <option value="1080x1350">Portrait · 1080 × 1350</option>
+              <option value="1920x1080">Landscape · 1920 × 1080</option>
+            </select>
+          </label>
+          <div class="action-row">
+            <button id="shuffle" class="secondary-button" type="button" title="Shuffle panel photos (R)">↻ <span>Shuffle</span></button>
+            <button id="export" class="primary-button" type="button" title="Export PNG (E)">Export PNG <span aria-hidden="true">↗</span></button>
+          </div>
+          <button id="reset-panel" class="reset-button" type="button">Reset selected panel crop</button>
+          <p id="panel-info" class="panel-info" aria-live="polite">No panel selected.</p>
+          <p id="status" class="status-line" role="status" aria-live="polite">Loading your studio…</p>
+        </section>
+
+        <footer class="sidebar-footer"><span>OFFLINE BY DESIGN</span><span>1 — 4 grades&nbsp;&nbsp; · &nbsp;&nbsp;E export&nbsp;&nbsp; · &nbsp;&nbsp;R shuffle</span></footer>
+      </aside>
+
+      <section class="preview-column" aria-label="Live poster preview">
+        <div class="preview-topline"><div><span class="preview-label">LIVE PREVIEW</span><span class="preview-subtitle">A little midnight magic.</span></div><span class="preview-size">1080 <b>×</b> 1080</span></div>
+        <div id="stage" class="stage-wrap">
+          <div class="stage-frame"><canvas id="poster" aria-label="Interactive poster preview. Click a photo panel to select it, drag to pan, and use the wheel to zoom." width="960" height="640"></canvas></div>
+        </div>
+        <div class="preview-footer"><span><i class="keycap">DRAG</i> REFRAME PHOTO</span><span><i class="keycap">SCROLL</i> ZOOM</span><span><i class="keycap">DOUBLE CLICK</i> NEXT PHOTO</span></div>
+        <div class="preview-caption"><span class="caption-line"></span><span>MADE AFTER DARK</span><span class="caption-line"></span></div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
