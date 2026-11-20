@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midnight Marquee — cover studio</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="brand">
+    <p class="brand-kicker">NOW SHOWING</p>
+    <h1 class="brand-title">Midnight Marquee</h1>
+    <p class="brand-sub">an amber &amp; violet poster-cover studio</p>
+  </header>
+  <main class="stage">
+    <section class="hero" id="hero" aria-label="Cover preview">
+      <div class="marquee-lights" aria-hidden="true"></div>
+      <div class="hero-frame">
+        <canvas id="preview" width="1080" height="1080"></canvas>
+      </div>
+      <div class="title-block" aria-hidden="true">
+        <p class="tb-kicker">DOUBLE FEATURE</p>
+        <p class="tb-title">Midnight Marquee</p>
+        <p class="tb-sub">poster cover studio &middot; no network &middot; no libraries</p>
+      </div>
+      <p class="status" id="status" role="status">loading&hellip;</p>
+    </section>
+    <aside class="strip" aria-label="Controls">
+      <fieldset class="cell">
+        <legend>Photo</legend>
+        <input type="file" id="photo-input" accept="image/*">
+        <div class="row">
+          <button type="button" data-scene="pier">Pier</button>
+          <button type="button" data-scene="boulevard">Boulevard</button>
+          <button type="button" data-scene="marquee">Marquee</button>
+          <button type="button" id="clear-photo">Clear</button>
+        </div>
+        <p class="note">&hellip;or drop / paste an image onto the cover.</p>
+      </fieldset>
+      <fieldset class="cell">
+        <legend>Title block</legend>
+        <label>Headline <input id="headline" type="text" maxlength="60" value="MIDNIGHT MARQUEE"></label>
+        <label>Kicker <input id="kicker" type="text" maxlength="60" value="A NOIR CABARET IN FOUR ACTS"></label>
+        <label>Caption <input id="caption" type="text" maxlength="80" value="Opening Night"></label>
+        <div class="row" id="align">
+          <button type="button" data-align="left">Left</button>
+          <button type="button" data-align="center">Center</button>
+          <button type="button" data-align="right">Right</button>
+        </div>
+        <label>Tracking <input id="tracking" type="range" min="0" max="24" step="1" value="10"></label>
+      </fieldset>
+      <fieldset class="cell">
+        <legend>Layout &amp; panels</legend>
+        <label>Layout <select id="layout"></select></label>
+        <label>Panel zoom <input id="zoom" type="range" min="100" max="400" value="100"></label>
+        <div class="row">
+          <button type="button" id="reset-panel">Reset panel</button>
+        </div>
+      </fieldset>
+      <fieldset class="cell">
+        <legend>Grade &amp; effects</legend>
+        <div class="row" id="grades">
+          <button type="button" data-grade="sunset">Sunset</button>
+          <button type="button" data-grade="neon">Neon</button>
+          <button type="button" data-grade="noir">Noir</button>
+          <button type="button" data-grade="clean">Clean</button>
+        </div>
+        <label class="check"><input type="checkbox" id="fx-grain" checked> Grain</label>
+        <label class="check"><input type="checkbox" id="fx-halftone"> Halftone</label>
+        <label class="check"><input type="checkbox" id="fx-vignette" checked> Vignette</label>
+      </fieldset>
+      <fieldset class="cell">
+        <legend>Export</legend>
+        <label>Size
+          <select id="export-size">
+            <option value="1080x1080">1080 &times; 1080</option>
+            <option value="1080x1350">1080 &times; 1350</option>
+            <option value="1920x1080">1920 &times; 1080</option>
+          </select>
+        </label>
+        <div class="row">
+          <button type="button" id="export">Export PNG</button>
+          <button type="button" id="shuffle">Shuffle</button>
+        </div>
+        <p class="note">Keys: 1&ndash;4 grade &middot; E export &middot; R shuffle</p>
+      </fieldset>
+    </aside>
+  </main>
+</div>
+<script type="module" src="./src/shots.js"></script>
+</body>
+</html>

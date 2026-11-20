@@ -31,6 +31,38 @@ const AUTHORED_APP_FILES = [
 
 type ImportEdge = { file: string; spec: string; line: number };
 
+const IMAGE_EXTS = new Set([".png", ".jpg", ".jpeg"]);
+
+/**
+ * Read the pixel dimensions of a PNG or JPEG from its own header bytes.
+ * PNG: the IHDR chunk carries width/height at fixed offsets. JPEG: walk the
+ * marker segments until a start-of-frame marker (SOF0..SOF3, SOFn) and read
+ * the height/width pair. Returns null for anything unreadable or unsupported.
+ */
+function imageSize(file: string): { width: number; height: number } | null {
+  const bytes = readFileSync(file);
+  if (bytes.length >= 24 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) {
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  }
+  if (bytes.length >= 4 && bytes[0] === 0xff && bytes[1] === 0xd8) {
+    let offset = 2;
+    while (offset + 9 < bytes.length) {
+      if (bytes[offset] !== 0xff) break;
+      const marker = bytes[offset + 1];
+      if (marker === 0xd8 || (marker >= 0xd0 && marker <= 0xd9)) {
+        offset += 2;
+        continue;
+      }
+      const length = bytes.readUInt16BE(offset + 2);
+      if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        return { width: bytes.readUInt16BE(offset + 7), height: bytes.readUInt16BE(offset + 5) };
+      }
+      offset += 2 + length;
+    }
+  }
+  return null;
+}
+
 function fail(message: string): never {
   console.error(`preflight failed: ${message}`);
   process.exit(1);
@@ -64,12 +96,40 @@ function relativeImports(file: string): ImportEdge[] {
   for (const pattern of patterns) {
     for (const match of text.matchAll(pattern)) {
       const spec = match[1];
+      rejectUnresolvableSpecifier(file, spec);
       if (!spec.startsWith(".")) continue;
       const line = text.slice(0, match.index ?? 0).split("\n").length;
       edges.push({ file, spec, line });
     }
   }
+  // A dynamic import built from a template literal cannot be resolved or
+  // sandboxed statically, so refuse it outright.
+  for (const match of text.matchAll(/\bimport\s*\(\s*`([^`]*)`/g)) {
+    if (match[1].includes("${")) fail(`${relative(ROOT, file)} builds an import path dynamically (${match[1]})`);
+    rejectUnresolvableSpecifier(file, match[1]);
+    if (match[1].startsWith(".")) {
+      edges.push({ file, spec: match[1], line: 0 });
+    }
+  }
   return edges;
+}
+
+/**
+ * No import map exists in this app, so every module specifier must be
+ * relative. Network and protocol-relative specifiers are refused with a
+ * dedicated message; a bare name would only fail in the browser, so it is
+ * refused here where the failure is readable.
+ */
+function rejectUnresolvableSpecifier(file: string, spec: string): void {
+  if (/^(https?:|data:|blob:|\/\/)/i.test(spec)) {
+    fail(`${relative(ROOT, file)} imports from the network (${spec}); local relative modules only`);
+  }
+  if (spec.startsWith("/")) {
+    fail(`${relative(ROOT, file)} uses a root-absolute import (${spec}); relative modules only`);
+  }
+  if (!spec.startsWith(".")) {
+    fail(`${relative(ROOT, file)} imports the bare specifier "${spec}"; this app has no import map, relative modules only`);
+  }
 }
 
 function htmlScriptSources(file: string): ImportEdge[] {
@@ -77,16 +137,23 @@ function htmlScriptSources(file: string): ImportEdge[] {
   const edges: ImportEdge[] = [];
   const patterns = [
     /<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi,
-    /<link\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi
+    /<link\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi,
+    /<(?:img|source|video|audio|track|iframe|embed|object)\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi,
+    /<use\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi
   ];
   for (const pattern of patterns) {
     for (const match of text.matchAll(pattern)) {
       const spec = match[1];
-      if (/^(https?:)?\/\//i.test(spec) || spec.startsWith("data:")) {
-        fail(`${relative(ROOT, file)} references a remote asset (${spec}); local files only`);
+      if (/^(https?:)?\/\//i.test(spec) || spec.startsWith("data:") || spec.startsWith("blob:") || spec.startsWith("/")) {
+        fail(`${relative(ROOT, file)} references a remote or root-absolute asset (${spec}); local relative files only`);
       }
       edges.push({ file, spec, line: 0 });
     }
+  }
+  // Inline event handlers would be executable code living outside the
+  // reviewed module graph; the authored app wires events from modules.
+  if (/<[a-z][^>]*\son[a-z]+\s*=/i.test(text)) {
+    fail(`${relative(ROOT, file)} contains an inline event handler (on*=); wire events from a module instead`);
   }
   return edges;
 }
@@ -143,6 +210,11 @@ function checkSizes(): void {
     if (bytes > MAX_SCREENSHOT_BYTES) {
       fail(`${relative(ROOT, file)} is ${bytes} bytes; the screenshot limit is ${MAX_SCREENSHOT_BYTES}`);
     }
+    // The dossier builder accepts PNG and JPEG only; refuse anything else
+    // here where the failure names the file, not inside the vendor code.
+    if (!IMAGE_EXTS.has(extname(file).toLowerCase())) {
+      fail(`${relative(ROOT, file)} is not a PNG or JPEG screenshot`);
+    }
   }
 }
 
@@ -156,7 +228,9 @@ function printListing(): string[] {
   }
   console.log(`screenshots/ (${shots.length} files)`);
   for (const file of shots) {
-    console.log(`  ${relative(join(ROOT, "screenshots"), file).padEnd(30)} ${String(sizeOf(file)).padStart(9)} B`);
+    const dims = imageSize(file);
+    const dimsText = dims ? `${dims.width}x${dims.height}` : "dimensions unreadable";
+    console.log(`  ${relative(join(ROOT, "screenshots"), file).padEnd(30)} ${String(sizeOf(file)).padStart(9)} B  ${dimsText}`);
   }
   return [...appFiles, ...shots];
 }
