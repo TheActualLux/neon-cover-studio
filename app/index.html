@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Nightpost — Poster Cover Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app">
+    <aside id="controls" class="controls" aria-label="Poster controls">
+      <header class="brand">
+        <h1>Nightpost</h1>
+        <p class="tagline">Poster cover studio · offline</p>
+      </header>
+
+      <section class="group" aria-label="Poster text">
+        <label for="headline">Headline</label>
+        <input id="headline" type="text" value="SUNSET HEIST" maxlength="48" autocomplete="off" spellcheck="false">
+        <label for="kicker">Kicker</label>
+        <input id="kicker" type="text" value="A ONE-NIGHT JOB" maxlength="48" autocomplete="off" spellcheck="false">
+        <div class="row">
+          <div class="field">
+            <label for="align">Alignment</label>
+            <select id="align">
+              <option value="center">Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tracking">Tracking <span id="tracking-val">2</span></label>
+            <input id="tracking" type="range" min="0" max="12" step="1" value="2">
+          </div>
+        </div>
+      </section>
+
+      <section class="group" aria-label="Layout and grade">
+        <label for="layout">Layout</label>
+        <select id="layout">
+          <option value="bigleft">Big left · two right</option>
+          <option value="grid">Grid 2×2</option>
+          <option value="bleed">Full bleed</option>
+          <option value="stack">Tall 3 stack</option>
+          <option value="strip">Filmstrip 4</option>
+        </select>
+        <label for="grade">Grade <span class="hint">(keys 1–4)</span></label>
+        <select id="grade">
+          <option value="sunset">Sunset</option>
+          <option value="neon">Neon</option>
+          <option value="noir">Noir</option>
+          <option value="clean">Clean</option>
+        </select>
+      </section>
+
+      <fieldset class="group effects">
+        <legend>Effects</legend>
+        <label class="check"><input id="fx-grain" type="checkbox" checked> Grain</label>
+        <label class="check"><input id="fx-halftone" type="checkbox"> Halftone</label>
+        <label class="check"><input id="fx-vignette" type="checkbox" checked> Vignette</label>
+      </fieldset>
+
+      <section class="group" aria-label="Photos">
+        <label class="file-btn" for="file">Add photos…</label>
+        <input id="file" type="file" accept="image/*" multiple hidden>
+        <div class="row">
+          <button id="shuffle" type="button" title="Shuffle photos (R)">Shuffle (R)</button>
+          <button id="reset-panel" type="button" title="Reset pan and zoom of the selected panel">Reset panel</button>
+        </div>
+        <div id="photo-strip" class="photo-strip" hidden></div>
+        <p id="panel-info" class="panel-info">Panel 1/3</p>
+      </section>
+
+      <section class="group" aria-label="Export">
+        <label for="export-size">Export size</label>
+        <select id="export-size">
+          <option value="1080x1080">Square 1080×1080</option>
+          <option value="1080x1350">Portrait 1080×1350</option>
+          <option value="1920x1080">Wide 1920×1080</option>
+        </select>
+        <button id="export" type="button" class="primary" title="Export PNG (E)">Export PNG (E)</button>
+        <p id="status" class="status" role="status" aria-live="polite">Loading…</p>
+      </section>
+
+      <p class="hints">Click a panel to select · drag to pan · wheel to zoom · double-click cycles its photo · arrow keys nudge pan · +/− zooms · drop images anywhere · R shuffles · E exports.</p>
+    </aside>
+
+    <section class="stage" id="stage">
+      <canvas id="poster" role="img" aria-label="Live poster preview"></canvas>
+    </section>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
