@@ -50,7 +50,11 @@ function setStatus(msg) {
   statusEl.textContent = msg;
 }
 
-/** Load an image and only resolve after a real decode, so the first draw never races. */
+/**
+ * Load an image and resolve once onload fires. drawImage is valid at that
+ * point; awaiting img.decode() can hang in Chromium (the promise never
+ * settles even though onload fired), so decode is deliberately not awaited.
+ */
 function loadImage(url) {
   const img = new Image();
   const loaded = new Promise((resolve, reject) => {
@@ -58,10 +62,18 @@ function loadImage(url) {
     img.onerror = () => reject(new Error('image failed: ' + url));
   });
   img.decoding = 'async';
+  if (img.complete && img.naturalWidth > 0) {
+    // A url already complete before src is assigned means this Image object
+    // was reused or pre-populated by the caller; a fresh Image() is also
+    // complete but has naturalWidth 0, so the width check keeps it out.
+    return Promise.resolve(img);
+  }
   img.src = url;
-  return loaded
-    .then(() => (img.decode ? img.decode() : undefined))
-    .then(() => img);
+  if (img.complete && img.naturalWidth > 0) {
+    // Already available synchronously (e.g. cache hit); the load is done.
+    return Promise.resolve(img);
+  }
+  return loaded.then(() => img);
 }
 
 /** One built-in sample photo, shared by name; resolves to its library index. */
@@ -290,7 +302,7 @@ async function addFile(file) {
     state.photos.push({ name: (file.name || 'pasted image').replace(/\.[^.]+$/, ''), img, sample: false });
     return true;
   } finally {
-    // The bitmap is already decoded, so the object URL is safe to release now.
+    // The image has fully loaded (onload fired), so the URL is safe to release.
     URL.revokeObjectURL(url);
   }
 }
@@ -552,7 +564,7 @@ const shotApi = {
     gradeSelect.value = name;
   },
   whenImagesReady() {
-    // Every photo entered the library through an awaited decode, so nothing is pending.
+    // Every photo entered the library through loadImage(), so loading is done.
     return Promise.resolve();
   },
   enterCoverMode(size) {
